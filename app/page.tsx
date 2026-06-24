@@ -5,7 +5,7 @@ import TopBar from "@/components/TopBar";
 import Boot from "@/components/Boot";
 import ProcessTable from "@/components/ProcessTable";
 import { getFeaturedRepos } from "@/lib/github";
-import { getPosts } from "@/lib/writing";
+import { getPosts, formatDate } from "@/lib/writing";
 import { toolchain } from "@/content/work";
 import { site } from "@/content/site";
 
@@ -141,6 +141,7 @@ export default async function Home() {
                   <Link className="wln" key={p.slug} href={`/writing/${p.slug}`}>
                     <div className="top">
                       <span className="tag">[{p.pillar}]</span>
+                      <span className="wdate">{formatDate(p.date)}</span>
                       {p.draft && <span className="draft">draft</span>}
                     </div>
                     <div className="ttl">{p.title}</div>
@@ -202,12 +203,6 @@ export default async function Home() {
                 <b>sections</b> <kbd>j</kbd>
                 <kbd>k</kbd> <kbd>↑</kbd>
                 <kbd>↓</kbd>
-              </span>
-              <span>
-                <b>open</b> <kbd>enter</kbd>
-              </span>
-              <span>
-                <b>filter</b> <kbd>/</kbd>
               </span>
             </div>
             <span className="copy">© 2026 jeramiah coffey. built from scratch, no template.</span>
