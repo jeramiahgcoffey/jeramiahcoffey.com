@@ -38,6 +38,7 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const restoreFocus = useRef<HTMLElement | null>(null);
+  const cursorRef = useRef<string | null>(null); // last section the cursor landed on
 
   // refs mirror state so the stable global key listener reads current values
   const openRef = useRef(open);
@@ -56,6 +57,7 @@ export default function CommandPalette() {
 
   const goToSection = useCallback(
     (id: string) => {
+      cursorRef.current = id;
       const el = document.getElementById(id);
       if (el) {
         el.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
@@ -63,7 +65,6 @@ export default function CommandPalette() {
         el.focus({ preventScroll: true });
         // focus now lives on the section; don't let close() pull it back to the trigger
         restoreFocus.current = null;
-        window.history.replaceState(null, "", `/#${id}`);
       } else {
         router.push(`/#${id}`);
       }
@@ -71,22 +72,35 @@ export default function CommandPalette() {
     [router],
   );
 
-  // move between page sections with [ and ]
+  // step between page sections in reading order (left column top-to-bottom, then
+  // right column). j/k drive this; arrows are left alone so normal scrolling works.
   const step = useCallback(
     (dir: 1 | -1) => {
       const present = SECTIONS.filter((s) => document.getElementById(s.id));
       if (!present.length) return;
-      const offset = 120;
-      let cur = 0;
-      present.forEach((s, i) => {
-        const top = document.getElementById(s.id)!.getBoundingClientRect().top;
-        if (top <= offset) cur = i;
-      });
-      const atBottom =
-        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-      if (atBottom) cur = present.length - 1;
-      const next = Math.min(Math.max(cur + dir, 0), present.length - 1);
-      goToSection(present[next].id);
+
+      const fromScroll = () => {
+        let p = 0;
+        present.forEach((s, i) => {
+          if (document.getElementById(s.id)!.getBoundingClientRect().top <= 120) p = i;
+        });
+        const atBottom =
+          window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+        return atBottom ? present.length - 1 : p;
+      };
+
+      // single column (mobile): sections stack in reading order, so scroll position
+      // is reliable. two columns (desktop): columns share vertical positions, so
+      // step a deterministic cursor through the defined order instead.
+      let pos: number;
+      if (window.innerWidth < 880) {
+        pos = fromScroll();
+      } else {
+        pos = present.findIndex((s) => s.id === cursorRef.current);
+        if (pos === -1) pos = fromScroll();
+      }
+      pos = Math.min(Math.max(pos + dir, 0), present.length - 1);
+      goToSection(present[pos].id);
     },
     [goToSection],
   );
@@ -160,12 +174,12 @@ export default function CommandPalette() {
         return;
       }
       if (!openRef.current) {
-        // section navigation: the one global behavior for j/k/arrows
+        // j/k jump sections; arrows are left to the browser for normal scrolling
         if (isEditable(e.target)) return;
-        if (e.key === "j" || e.key === "ArrowDown") {
+        if (e.key === "j") {
           e.preventDefault();
           step(1);
-        } else if (e.key === "k" || e.key === "ArrowUp") {
+        } else if (e.key === "k") {
           e.preventDefault();
           step(-1);
         }

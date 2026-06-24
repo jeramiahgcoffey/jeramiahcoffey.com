@@ -201,8 +201,7 @@ export default async function Home() {
               </span>
               <span>
                 <b>sections</b> <kbd>j</kbd>
-                <kbd>k</kbd> <kbd>↑</kbd>
-                <kbd>↓</kbd>
+                <kbd>k</kbd>
               </span>
             </div>
             <span className="copy">© 2026 jeramiah coffey. built from scratch, no template.</span>

@@ -95,7 +95,6 @@ export default function TopBar() {
     e.preventDefault();
     setMenuOpen(false);
     el.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.history.replaceState(null, "", `/#${id}`);
     setActive(id);
   };
 
