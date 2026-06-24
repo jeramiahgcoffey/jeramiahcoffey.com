@@ -26,6 +26,8 @@ export default function ProcessTable() {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
+      // command palette owns the keyboard while it's open
+      if (document.body.classList.contains("cmdk-open")) return;
       const inInput = document.activeElement === inputRef.current;
       if (e.key === "/" && !inInput) {
         e.preventDefault();

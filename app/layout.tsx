@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { site } from "@/content/site";
+import CommandPalette from "@/components/CommandPalette";
 
 const mono = JetBrains_Mono({
   variable: "--font-jetbrains",
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <style>{`#boot{display:none!important}`}</style>
         </noscript>
         {children}
+        <CommandPalette />
       </body>
     </html>
   );

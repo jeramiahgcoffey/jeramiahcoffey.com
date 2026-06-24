@@ -116,6 +116,18 @@ export default function TopBar() {
       <span className="spacer" />
       <button
         type="button"
+        className="cmdk-btn"
+        aria-label="Open command menu"
+        onClick={() => window.dispatchEvent(new CustomEvent("toggle-cmdk"))}
+      >
+        <svg className="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+          <path d="M21 21l-4.3-4.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span className="cmdk-kbd" aria-hidden="true">⌘K</span>
+      </button>
+      <button
+        type="button"
         className="menu-toggle"
         aria-label={menuOpen ? "Close menu" : "Open menu"}
         aria-expanded={menuOpen}

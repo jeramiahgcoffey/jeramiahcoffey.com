@@ -4,6 +4,7 @@ export const site = {
   role: "Founding Engineer",
   location: "Denver, CO",
   url: "https://jeramiahcoffey.com",
+  repo: "https://github.com/jeramiahgcoffey/jeramiahcoffey.com",
   email: "jeramiahcoffey.dev@gmail.com",
   description:
     "Jeramiah Coffey builds software for ABA therapy and ships tools for the people who build software. Founding engineer, healthtech, Denver CO.",

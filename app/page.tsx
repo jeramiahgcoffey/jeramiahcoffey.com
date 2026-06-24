@@ -20,7 +20,7 @@ export default async function Home() {
         <TopBar />
 
         <main>
-        <section className="hero" aria-label="Introduction">
+        <section className="hero" id="intro" aria-label="Introduction">
           <div className="kick">$ ./jeramiah --status</div>
           <h1>
             I build software for <span className="g">ABA therapy</span>.
@@ -104,7 +104,7 @@ export default async function Home() {
           </div>
 
           <aside className="col">
-            <section className="panel">
+            <section className="panel" id="toolchain">
               <div className="panel-h mono">
                 <span>
                   <span className="cmd">$</span> cat toolchain
@@ -150,7 +150,7 @@ export default async function Home() {
               </div>
             </section>
 
-            <section className="panel">
+            <section className="panel" id="contact">
               <div className="panel-h mono">
                 <span>
                   <span className="cmd">$</span> whoami
@@ -195,8 +195,15 @@ export default async function Home() {
           <div className="keybar mono">
             <div className="keys-hint" aria-hidden="true">
               <span>
-                <b>nav</b> <kbd>↑</kbd>
-                <kbd>↓</kbd> <kbd>j</kbd>
+                <b>commands</b> <kbd>⌘</kbd>
+                <kbd>k</kbd>
+              </span>
+              <span>
+                <b>sections</b> <kbd>[</kbd>
+                <kbd>]</kbd>
+              </span>
+              <span>
+                <b>rows</b> <kbd>j</kbd>
                 <kbd>k</kbd>
               </span>
               <span>
@@ -204,9 +211,6 @@ export default async function Home() {
               </span>
               <span>
                 <b>filter</b> <kbd>/</kbd>
-              </span>
-              <span>
-                <b>close</b> <kbd>esc</kbd>
               </span>
             </div>
             <span className="copy">© 2026 jeramiah coffey. built from scratch, no template.</span>

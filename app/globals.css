@@ -73,9 +73,22 @@ a { color: inherit; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(159,206,95,.45); } 70% { box-shadow: 0 0 0 7px rgba(159,206,95,0); } 100% { box-shadow: 0 0 0 0 rgba(159,206,95,0); } }
 .spacer { flex: 1; display: none; }
 
+/* command-palette trigger */
+.cmdk-btn {
+  margin-left: auto; flex: none;
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 34px; padding: 0 10px;
+  background: transparent; border: 1px solid var(--line); border-radius: 8px;
+  color: var(--dim); cursor: pointer; font-family: var(--font-mono); font-size: 12px;
+  transition: color .15s, border-color .15s;
+}
+.cmdk-btn:hover { color: var(--gold); border-color: var(--gold); }
+.cmdk-btn .ico { flex: none; }
+.cmdk-kbd { display: none; letter-spacing: .03em; }
+
 /* hamburger toggle — mobile only */
 .menu-toggle {
-  margin-left: auto; flex: none;
+  flex: none; margin-left: 0;
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 34px; padding: 0;
   background: transparent; border: 1px solid var(--line); border-radius: 8px;
@@ -123,6 +136,8 @@ a { color: inherit; }
   .topbar nav a.active { background: none; box-shadow: none; }
   .topbar nav a.active::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 2px; height: 1px; background: var(--gold); }
   .spacer { display: block; }
+  .cmdk-btn { margin-left: 0; }
+  .cmdk-kbd { display: inline; }
   :where(section, main)[id] { scroll-margin-top: 78px; }
 }
 
@@ -299,6 +314,75 @@ a { color: inherit; }
 
 @keyframes rowin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .stagger { animation: rowin .4s ease both; }
+
+/* ---------- command palette ---------- */
+.cmdk-overlay {
+  position: fixed; inset: 0; z-index: 80;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 13vh 16px 16px;
+  background: rgba(8, 7, 5, 0.62);
+  backdrop-filter: blur(2px);
+  animation: cmdk-fade .12s ease both;
+}
+@keyframes cmdk-fade { from { opacity: 0; } to { opacity: 1; } }
+.cmdk {
+  width: 100%; max-width: 540px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  box-shadow: 0 30px 80px -28px rgba(0,0,0,.8), 0 0 0 1px rgba(224,169,62,.05);
+  overflow: hidden;
+  animation: cmdk-pop .14s ease both;
+}
+@keyframes cmdk-pop { from { opacity: 0; transform: translateY(-6px) scale(.985); } to { opacity: 1; transform: none; } }
+.cmdk-input { display: flex; align-items: center; gap: 10px; padding: 13px 14px; border-bottom: 1px solid var(--line); }
+.cmdk-prompt { color: var(--gold); font-size: 14px; flex: none; width: 1ch; text-align: center; }
+.cmdk-input input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; color: var(--fg); font-family: var(--font-mono); font-size: 16px; }
+.cmdk-input input::placeholder { color: var(--faint); }
+.cmdk-esc { flex: none; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; font-size: 10.5px; color: var(--faint); }
+.cmdk-list { max-height: min(54vh, 380px); overflow-y: auto; padding: 6px; }
+.cmdk-empty { padding: 18px 12px; color: var(--faint); font-size: 13px; text-align: center; }
+.cmdk-opt {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
+  padding: 11px 12px; border: 0; border-radius: 8px; background: none; color: var(--dim);
+  font-family: var(--font-mono); font-size: 13.5px; text-align: left; cursor: pointer;
+}
+.cmdk-opt .cmdk-label { color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmdk-opt .cmdk-hint { color: var(--faint); font-size: 11px; flex: none; }
+.cmdk-opt.active { background: var(--panel-2); box-shadow: inset 2px 0 0 var(--gold); }
+.cmdk-opt.active .cmdk-label { color: var(--gold); }
+@media (min-width: 560px) { .cmdk-input input { font-size: 14px; } }
+
+/* ---------- 404 (no process listening) ---------- */
+.notfound { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 0 90px; }
+.nf-card { width: 100%; max-width: 520px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, var(--panel-2), var(--panel)); overflow: hidden; box-shadow: 0 28px 70px -30px rgba(0,0,0,.7); }
+.nf-top { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid var(--line); font-size: 12px; color: var(--faint); }
+.nf-top .dot { width: 9px; height: 9px; border-radius: 50%; background: #3a3325; flex: none; }
+.nf-top .nf-title { margin-left: 8px; }
+.nf-body { padding: 18px 16px 8px; font-size: 13px; line-height: 1.95; }
+.nf-body .l { white-space: pre-wrap; word-break: break-word; color: var(--dim); }
+.nf-body .cmd { color: var(--gold); }
+.nf-body .err { color: #e0744e; }
+.nf-body .dim { color: var(--faint); }
+.nf-body .cur { display: inline-block; width: .5ch; height: 1em; background: var(--gold); vertical-align: -2px; margin-left: 2px; border-radius: 1px; animation: blink 1.15s steps(1) infinite; }
+.nf-actions { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px 16px 18px; font-family: var(--font-mono); }
+.nf-actions a { font-size: 12px; color: var(--fg); text-decoration: none; border: 1px solid var(--line); padding: 9px 13px; border-radius: 7px; transition: .15s; }
+.nf-actions a:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ---------- section numerals (pid flavor) ---------- */
+main { counter-reset: pid; }
+.panel { counter-increment: pid; }
+.panel-h > span:first-child::before {
+  content: counter(pid, decimal-leading-zero) "  ";
+  color: var(--faint); opacity: .5; font-weight: 400;
+}
+
+/* ---------- ambient motion (gold glow drifts; killed under reduced-motion) ---------- */
+body::before { animation: ambient-drift 26s ease-in-out infinite alternate; will-change: transform, opacity; }
+@keyframes ambient-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: .92; }
+  to { transform: translate3d(0, -1.4%, 0) scale(1.05); opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, ::before, ::after { animation: none !important; transition: none !important; }
