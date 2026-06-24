@@ -2,16 +2,24 @@
 
 import { useEffect, useState } from "react";
 
+// persists across client-side navigations within a single page load, so
+// returning to home from /writing doesn't replay the boot sequence.
+// resets on a hard reload (new JS context), which is when we *want* it.
+let hasBooted = false;
+
 export default function Boot() {
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(() => hasBooted);
   const [lines, setLines] = useState(0);
   const [fade, setFade] = useState(false);
 
   useEffect(() => {
+    if (hasBooted) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      hasBooted = true;
       setDone(true);
       return;
     }
+    hasBooted = true;
     const timers: number[] = [];
     [1, 2, 3].forEach((n, i) => timers.push(window.setTimeout(() => setLines(n), 180 * (i + 1))));
     const fadeT = window.setTimeout(() => setFade(true), 180 * 3 + 420);

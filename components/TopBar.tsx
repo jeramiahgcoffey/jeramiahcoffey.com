@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import UptimeTicker from "./UptimeTicker";
@@ -20,6 +20,8 @@ export default function TopBar() {
   const pathname = usePathname();
   const onWriting = pathname?.startsWith("/writing") ?? false;
   const [active, setActive] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (onWriting) return;
@@ -60,6 +62,28 @@ export default function TopBar() {
     });
   }, [active, onWriting]);
 
+  // dropdown: close on Escape, outside click, or growing past the mobile breakpoint
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    const onPointer = (e: MouseEvent) => {
+      if (!headerRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onResize = () => {
+      if (window.innerWidth >= 560) setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointer);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointer);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [menuOpen]);
+
   const activeNav = onWriting ? "writing" : active;
   const pathLabel = onWriting ? "/writing" : active ? `/${active}` : "";
 
@@ -69,13 +93,14 @@ export default function TopBar() {
     const el = document.getElementById(id);
     if (!el) return;
     e.preventDefault();
+    setMenuOpen(false);
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     window.history.replaceState(null, "", `/#${id}`);
     setActive(id);
   };
 
   return (
-    <header className="topbar mono">
+    <header className="topbar mono" ref={headerRef}>
       <Link className="host" href="/" aria-label="Home">
         jeramiah<b>.</b>localhost
         <span className="path" suppressHydrationWarning>
@@ -89,29 +114,47 @@ export default function TopBar() {
       <UptimeTicker />
       <span className="pill loc">{site.location}</span>
       <span className="spacer" />
-      <nav aria-label="Sections">
-        {NAV.map((item) =>
-          item.route ? (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={activeNav === item.id ? "active" : undefined}
-              aria-current={activeNav === item.id ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
-          ) : (
+      <button
+        type="button"
+        className="menu-toggle"
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={menuOpen}
+        aria-controls="topnav"
+        onClick={() => setMenuOpen((o) => !o)}
+      >
+        <span className="bars" aria-hidden="true" />
+      </button>
+      <nav id="topnav" aria-label="Sections" className={menuOpen ? "open" : undefined}>
+        {NAV.map((item) => {
+          const cls = activeNav === item.id ? "active" : undefined;
+          // routed link (writing), or a hash link when we're off the home page:
+          // use next/link so it's a client-side nav (no full reload, no boot replay)
+          if (item.route || onWriting) {
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                className={cls}
+                aria-current={cls ? "page" : undefined}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            );
+          }
+          // on home: smooth-scroll to the in-page section
+          return (
             <a
               key={item.id}
               href={item.href}
-              className={activeNav === item.id ? "active" : undefined}
-              aria-current={activeNav === item.id ? "true" : undefined}
+              className={cls}
+              aria-current={cls ? "true" : undefined}
               onClick={(e) => jump(e, item.id)}
             >
               {item.label}
             </a>
-          ),
-        )}
+          );
+        })}
       </nav>
     </header>
   );
