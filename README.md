@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# jeramiahcoffey.com
 
-## Getting Started
+Personal site for Jeramiah Coffey, built from scratch. The concept: a career as a
+live system you scan. Roles are processes (`RUNNING`, `PUBLISHED`, `EXIT 0`),
+side projects run as daemons, and the whole thing behaves like the localhost
+process monitor it is named after (`portview`).
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router) + **React 19** + **TypeScript**
+- **Tailwind v4** for tokens, hand-authored CSS for the system UI
+- **next/font**: JetBrains Mono + Hanken Grotesk
+- Markdown writing with `gray-matter` + `react-markdown`
+- Live GitHub repo data, revalidated hourly
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev     # http://localhost:3000
+npm run build   # production build + type check
+npm start       # serve the production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where the content lives
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `content/site.ts` — name, url, socials, location, career start (drives the uptime ticker)
+- `content/work.ts` — the process table (roles), toolchain, featured repos
+- `content/writing/*.md` — blog posts. Frontmatter: `title, date, pillar, summary, draft`
+- `lib/github.ts` — fetches live stars/descriptions for featured repos
+- `app/page.tsx` — the dashboard; `about.md` prose is inline here
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To add a post: drop a `.md` file in `content/writing/`. It appears in
+`tail -f writing.log` on the home page and at `/writing`.
 
-## Learn More
+## Design rules
 
-To learn more about Next.js, take a look at the following resources:
+- **green = alive** (status only), **gold = voice** (brand). Nothing else uses them.
+- No em dashes, anywhere.
+- No AI-slop tells: no gradient text, no glassmorphism, tinted not pure black.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [DEPLOY.md](./DEPLOY.md) for Vercel + GoDaddy DNS.

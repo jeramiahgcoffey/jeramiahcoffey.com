@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>jeramiah.localhost</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#13110d; --panel:#1b1812; --panel-2:#231f17;
+    --line:#342d20; --line-soft:#251f16;
+    --fg:#ece6d8; --dim:#9c9482; --faint:#6b6351;
+    --gold:#e0a93e;            /* signature: Jeramiah's voice */
+    --green:#9fce5f;           /* semantic: alive / running only */
+    --cyan:#6fc7cf;            /* semantic: published */
+    --violet:#c2a9ec;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(120% 80% at 82% -25%, #16201a 0%, transparent 58%), var(--bg);
+    color:var(--fg); font-family:"Hanken Grotesk",sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.55;
+  }
+  ::selection{background:var(--gold);color:var(--bg)}
+  .mono{font-family:"JetBrains Mono",monospace}
+  a{color:inherit}
+  .app{max-width:1180px;margin:0 auto;padding:22px 24px 0;display:flex;flex-direction:column;min-height:100vh}
+
+  /* topbar */
+  .topbar{display:flex;align-items:center;gap:16px;font-family:"JetBrains Mono";font-size:13px;border:1px solid var(--line);border-radius:10px;padding:12px 16px;background:linear-gradient(180deg,var(--panel-2),var(--panel));position:sticky;top:14px;z-index:20}
+  .host{font-weight:700}.host b{color:var(--gold)}
+  .pill{display:inline-flex;align-items:center;gap:7px;color:var(--dim);font-size:12px}
+  .led{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(166,217,106,.45)}70%{box-shadow:0 0 0 7px rgba(166,217,106,0)}100%{box-shadow:0 0 0 0 rgba(166,217,106,0)}}
+  .spacer{flex:1}
+  .topbar nav{display:flex;gap:2px}
+  .topbar nav a{font-size:12px;color:var(--dim);text-decoration:none;padding:5px 10px;border-radius:6px;transition:.15s}
+  .topbar nav a:hover{background:var(--panel-2);color:var(--gold)}
+  @media(max-width:820px){.pill.hideable{display:none}}
+
+  /* boot */
+  #boot{position:fixed;inset:0;background:var(--bg);z-index:60;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono";font-size:13px}
+  #boot .l{color:var(--dim);opacity:0;animation:fin .01s forwards}
+  #boot .l .ok{color:var(--gold)} #boot .l .n{color:var(--faint)}
+  @keyframes fin{to{opacity:1}}
+
+  .hero{padding:34px 4px 24px}
+  .hero .kick{font-family:"JetBrains Mono";font-size:12.5px;color:var(--gold);margin-bottom:16px}
+  .hero h1{font-size:clamp(32px,4.8vw,50px);font-weight:700;letter-spacing:-.03em;line-height:1.05;max-width:19ch}
+  .hero h1 .g{color:var(--gold)}
+  .hero .lede{margin-top:18px;max-width:60ch;color:#aeb4a6;font-size:17px}
+  .hero .lede b{color:var(--fg);font-weight:600}
+  .hero .now{margin-top:18px;font-family:"JetBrains Mono";font-size:12.5px;color:var(--dim);border-left:2px solid var(--line);padding-left:12px}
+  .hero .now b{color:var(--gold);font-weight:500}
+  .hero h1 .cur{display:inline-block;width:.5ch;height:.9em;background:var(--gold);margin-left:8px;vertical-align:-2px;border-radius:1px;animation:blink 1.15s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .grid{display:grid;grid-template-columns:1fr 326px;gap:18px;margin-top:14px;flex:1}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  .col{display:flex;flex-direction:column;gap:18px}
+
+  .panel{border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+  .panel-h{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-family:"JetBrains Mono";font-size:12px;color:var(--dim)}
+  .panel-h .cmd{color:var(--gold)}.panel-h .r{color:var(--faint)}
+
+  /* process table */
+  .thead,.prow{display:grid;grid-template-columns:78px 1fr 104px 70px;gap:14px;align-items:center}
+  .thead{padding:9px 14px;font-family:"JetBrains Mono";font-size:11px;letter-spacing:.06em;color:var(--faint);text-transform:uppercase;border-bottom:1px solid var(--line-soft)}
+  .prow{padding:13px 14px;font-family:"JetBrains Mono";cursor:pointer;border-bottom:1px solid var(--line-soft);transition:background .12s}
+  .prow:last-child{border-bottom:0}
+  .prow:hover,.prow.sel{background:var(--panel-2)} .prow.sel{box-shadow:inset 2px 0 0 var(--gold)}
+  .prow .port{color:var(--cyan);font-size:13px}
+  .prow .name{font-size:14px;font-weight:500}
+  .prow .name .role{display:block;font-size:11px;color:var(--faint);font-weight:400;margin-top:2px}
+  .status{font-size:11.5px;display:inline-flex;align-items:center;gap:6px}
+  .status .d{width:7px;height:7px;border-radius:50%}
+  .s-run{color:var(--green)}.s-run .d{background:var(--green);box-shadow:0 0 6px var(--green)}
+  .s-pub{color:var(--cyan)}.s-pub .d{background:var(--cyan)}
+  .s-exit{color:var(--faint)}.s-exit .d{background:#454d41}
+  .prow .el{font-size:11.5px;color:var(--dim);text-align:right}
+  .detail{grid-column:1/5;overflow:hidden;max-height:0;transition:max-height .3s ease;background:#10160f}
+  .detail.open{max-height:520px}
+  .detail-in{padding:8px 16px 20px 96px;font-family:"Hanken Grotesk"}
+  .detail-in .when{font-family:"JetBrains Mono";font-size:11.5px;color:var(--faint);margin-bottom:4px}
+  .detail-in .stk{font-family:"JetBrains Mono";font-size:11.5px;color:var(--cyan);margin:6px 0 12px}
+  .detail-in ul{list-style:none}
+  .detail-in li{position:relative;padding-left:18px;margin:7px 0;color:#bcc2b4;font-size:14px;max-width:76ch}
+  .detail-in li::before{content:"›";position:absolute;left:0;color:var(--gold)}
+  .detail-in a.repo{display:inline-block;margin-top:12px;font-family:"JetBrains Mono";font-size:12px;color:var(--gold);text-decoration:none;border:1px solid var(--line);padding:7px 12px;border-radius:6px}
+  .detail-in a.repo:hover{background:var(--panel-2)}
+  @media(max-width:880px){.detail-in{padding-left:16px}}
+  .filter{display:none;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--line-soft);font-family:"JetBrains Mono";font-size:13px}
+  .filter.on{display:flex}
+  .filter input{background:transparent;border:0;outline:0;color:var(--fg);font-family:"JetBrains Mono";font-size:13px;flex:1}
+  .filter .pre{color:var(--gold)}
+
+  /* open source */
+  .repos{padding:6px 0}
+  .repo-row{display:grid;grid-template-columns:1fr auto;gap:4px 14px;padding:13px 14px;border-bottom:1px solid var(--line-soft);text-decoration:none;transition:.12s}
+  .repo-row:last-child{border-bottom:0}
+  .repo-row:hover{background:var(--panel-2)}
+  .repo-row .nm{font-family:"JetBrains Mono";font-size:13.5px;color:var(--fg);font-weight:500}
+  .repo-row:hover .nm{color:var(--gold)}
+  .repo-row .meta{font-family:"JetBrains Mono";font-size:11px;color:var(--faint);text-align:right;white-space:nowrap}
+  .repo-row .ds{grid-column:1/3;color:var(--dim);font-size:13px}
+
+  /* about prose */
+  .prose{padding:16px 16px 18px}
+  .prose p{color:#bcc2b4;font-size:14.5px;margin-bottom:12px;max-width:74ch}
+  .prose p:last-child{margin-bottom:0}
+  .prose b{color:var(--fg);font-weight:600}
+
+  /* toolchain */
+  .tool{padding:12px 14px;border-bottom:1px solid var(--line-soft)}
+  .tool:last-child{border-bottom:0}
+  .tool .cat{font-family:"JetBrains Mono";font-size:11px;color:var(--faint);text-transform:lowercase;margin-bottom:8px}
+  .tool .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-family:"JetBrains Mono";font-size:11.5px;color:#cbd1c2;background:var(--panel-2);border:1px solid var(--line-soft);padding:3px 8px;border-radius:5px}
+  .chip.hot{color:var(--gold);border-color:#43381f}
+
+  /* writing */
+  .log{padding:4px 0}
+  .wln{display:block;padding:11px 14px;border-bottom:1px solid var(--line-soft);text-decoration:none;cursor:pointer}
+  .wln:last-child{border-bottom:0}
+  .wln:hover{background:var(--panel-2)}
+  .wln .top{display:flex;gap:9px;align-items:baseline;font-family:"JetBrains Mono";font-size:11.5px}
+  .wln .tag{color:var(--violet);width:78px;flex-shrink:0}
+  .wln .draft{color:var(--faint);margin-left:auto}
+  .wln .ttl{font-family:"Hanken Grotesk";font-size:14px;color:#cbd1c2;font-weight:500;margin-top:5px}
+  .wln:hover .ttl{color:var(--gold)}
+  .wln .ab{font-size:12.5px;color:var(--dim);margin-top:4px;line-height:1.5}
+
+  .card{padding:14px}
+  .card .facts{font-family:"JetBrains Mono";font-size:12px;color:var(--dim);line-height:1.9}
+  .card .facts b{color:#cbd1c2;font-weight:500}
+  .card .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-family:"JetBrains Mono";font-size:12px}
+  .card .links a{text-decoration:none;color:var(--fg);border:1px solid var(--line);padding:7px 11px;border-radius:6px;transition:.15s}
+  .card .links a:hover{border-color:var(--gold);color:var(--gold)}
+
+  .keybar{margin-top:20px;display:flex;flex-wrap:wrap;gap:6px 18px;padding:12px 6px 26px;font-family:"JetBrains Mono";font-size:11.5px;color:var(--faint)}
+  .keybar b{color:var(--dim);font-weight:500}
+  .keybar kbd{background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--fg);font-size:11px}
+
+  @keyframes rowin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .stagger{animation:rowin .4s ease both}
+  @media(prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div id="boot"><div class="mono" id="bootlines"></div></div>
+
+<div class="app">
+  <div class="topbar mono">
+    <span class="host">jeramiah<b>.</b>localhost</span>
+    <span class="pill"><span class="led"></span>online</span>
+    <span class="pill mono hideable" id="uptime">uptime …</span>
+    <span class="pill hideable">Denver, CO</span>
+    <span class="spacer"></span>
+    <nav>
+      <a href="#work" data-jump="work">work</a>
+      <a href="#source" data-jump="source">source</a>
+      <a href="#writing" data-jump="writing">writing</a>
+      <a href="#about" data-jump="about">about</a>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <div class="kick">$ ./jeramiah --status</div>
+    <h1>I build software for <span class="g">ABA therapy</span>, and ship tools for the people who build software.<span class="cur" aria-hidden="true"></span></h1>
+    <p class="lede">Bartender turned <b>founding engineer</b>. Four years of full stack across healthtech, now owning a production, HIPAA-regulated platform from the database to the native app to the cloud it runs on.</p>
+    <p class="now mono">// now: hardening clinical scheduling, learning Go in public, writing about <b>what engineering becomes when AI writes the code</b>.</p>
+  </header>
+
+  <div class="grid">
+    <div class="col">
+      <!-- work -->
+      <main class="panel" id="work">
+        <div class="panel-h mono"><span><span class="cmd">$</span> ps -ef --career</span><span class="r" id="count"></span></div>
+        <div class="filter mono" id="filter"><span class="pre">/</span><input id="filterInput" placeholder="filter processes by name, stack, status" autocomplete="off"/></div>
+        <div class="thead mono"><span>PORT</span><span>PROCESS</span><span>STATUS</span><span>TIME</span></div>
+        <div id="rows"></div>
+      </main>
+
+      <!-- open source -->
+      <section class="panel" id="source">
+        <div class="panel-h mono"><span><span class="cmd">$</span> ls ~/open-source</span><span class="r">public on github</span></div>
+        <div class="repos" id="repos"></div>
+      </section>
+
+      <!-- about -->
+      <section class="panel" id="about">
+        <div class="panel-h mono"><span><span class="cmd">$</span> cat about.md</span></div>
+        <div class="prose">
+          <p>I poured drinks before I wrote software. Bartending is reading a room, working a queue under pressure, and getting small details right when they matter, which turned out to be better preparation for engineering than it sounds.</p>
+          <p>I went back for a CS degree at WGU while working, then spent four years moving from frontend-leaning full stack to owning features end to end. The turning point was a genogram tool at KVC, where owning one feature from the database to the pixels changed how I think about building software.</p>
+          <p>Now I am the <b>founding engineer</b> on an ABA therapy platform, which means clinical data, HIPAA, offline-first mobile, and cloud infrastructure all land on my desk. I care about the unglamorous parts: auth that holds up, data models that match the domain, and tools that respect the person using them.</p>
+          <p>Almost nobody talks publicly about engineering for ABA therapy. I want to be one of the people who does, and to think out loud about what the job becomes when AI writes more of the code.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- side -->
+    <aside class="col">
+      <section class="panel">
+        <div class="panel-h mono"><span><span class="cmd">$</span> cat toolchain</span><span class="r">no scores, just signal</span></div>
+        <div id="tools"></div>
+      </section>
+
+      <section class="panel" id="writing">
+        <div class="panel-h mono"><span><span class="cmd">$</span> tail -f writing.log</span><span class="r">4 drafts</span></div>
+        <div class="log" id="log"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-h mono"><span><span class="cmd">$</span> whoami</span></div>
+        <div class="card">
+          <div class="facts mono">
+            <div><b>role</b> &nbsp;founding engineer, healthtech</div>
+            <div><b>edu</b> &nbsp;&nbsp;B.S. Computer Science, WGU</div>
+            <div><b>cert</b> &nbsp;AWS Cloud Practitioner</div>
+            <div><b>loc</b> &nbsp;&nbsp;Denver, CO</div>
+          </div>
+          <div class="links">
+            <a href="https://github.com/jeramiahgcoffey">GitHub</a>
+            <a href="https://linkedin.com/in/jeramiah-coffey">LinkedIn</a>
+            <a href="mailto:jeramiahcoffey.dev@gmail.com">Email</a>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="keybar mono">
+    <span><b>nav</b> <kbd>↑</kbd><kbd>↓</kbd> <kbd>j</kbd><kbd>k</kbd></span>
+    <span><b>open</b> <kbd>enter</kbd></span>
+    <span><b>filter</b> <kbd>/</kbd></span>
+    <span><b>close</b> <kbd>esc</kbd></span>
+    <span style="margin-left:auto">© 2026 jeramiah coffey. built from scratch, no template.</span>
+  </div>
+</div>
+
+<script>
+const procs = [
+  {port:':2025', name:'acquire-learning', role:'founding engineer, healthtech', status:'RUNNING', cls:'s-run', el:'11mo',
+   when:'Jul 2025 to present', stack:'React · React Native · Express · MongoDB · Terraform · AWS',
+   detail:[
+     'Founding engineer on a production, HIPAA-regulated ABA therapy platform, owning features end to end across backend services, web and native clients, and cloud infrastructure.',
+     'Designed the auth and security model: organization-enforced MFA, PIN-gated access for shared clinical devices, and HIPAA audit logging.',
+     'Built the offline-first React Native clinician app with local data sync, image caching, and secure session access so clinicians work reliably in the field without connectivity.',
+     'Shipped reporting and analytics in the React web app: clinical progress dashboards and program KPIs powered by MongoDB aggregation pipelines.',
+     'Operate the AWS infrastructure as code with Terraform, including automated credential rotation, security hardening, and observability across logs, metrics, and alerts. Own CI/CD to production via GitHub Actions.',
+     'Multiply delivery velocity by directing agentic AI tools across the stack while personally owning architecture, review, security, and production quality.'
+   ]},
+  {port:':v0.1.0', name:'portview', role:'daemon, open source', status:'PUBLISHED', cls:'s-pub', el:'2026',
+   when:'Released Jun 2026', stack:'Go · Bubble Tea · Lip Gloss',
+   detail:[
+     'A single-binary TUI that discovers TCP servers listening on localhost, shows the owning process, and lets you open, kill, label, and filter them.',
+     'My first Go project, shipped through a Homebrew tap and GitHub Releases with four platform binaries and checksums.',
+     'This site borrows its concept. Install it: brew install jeramiahgcoffey/tap/portview'
+   ], link:'https://github.com/jeramiahgcoffey/portview'},
+  {port:':bg', name:'second-brain', role:'daemon, always on', status:'RUNNING', cls:'s-run', el:'ongoing',
+   when:'Ongoing since 2026', stack:'Obsidian · Markdown · Claude Code',
+   detail:['A PARA-organized knowledge vault wired into Claude Code. It is the engine behind learning in public and every draft in writing.log.']},
+  {port:':2024', name:'kvc-health / genogram', role:'software engineer', status:'EXIT 0', cls:'s-exit', el:'9mo',
+   when:'Oct 2024 to Jul 2025', stack:'React · Go.js · TypeScript · Express · MongoDB',
+   detail:[
+     'Built an interactive Genogram product so caseworkers analyze client relationships, document family dynamics, and identify placement options.',
+     'Designed accessible, validated React forms for assessments, case plans, and critical incidents, formatted to state regulations and backed by type-safe REST APIs.',
+     'Built a custom React Hook Form service that let several data-collection products share visualization and PDF download and storage.'
+   ]},
+  {port:':2023', name:'cigna / staffing-tool', role:'software engineer', status:'EXIT 0', cls:'s-exit', el:'18mo',
+   when:'Apr 2023 to Oct 2024', stack:'React · Redux · Java · Spring Boot · SQL Server · AWS',
+   detail:[
+     'Led the design, development, and deployment of an enterprise staffing and financial-planning tool.',
+     'Mentored interns and junior developers through technical guidance and pair-programming on complex stories.',
+     'Spearheaded a technical-debt initiative: configured ESLint, established a unit-testing framework, and upgraded packages.'
+   ]},
+  {port:':2022', name:'savings-group / los', role:'software engineer', status:'EXIT 0', cls:'s-exit', el:'7mo',
+   when:'Jun 2022 to Jan 2023', stack:'Vue · Vuetify · PHP',
+   detail:[
+     'Built modular single-page Loan Origination System and Customer Portal components.',
+     'Designed efficient asynchronous algorithms for actions requiring chained HTTP calls, and migrated the date library from Moment.js to Luxon.',
+     'Prepared products for CI/CD with Jest and Vue Test Utils, plus PHPUnit for API logic.'
+   ]}
+];
+
+const repos = [
+  {nm:'portview', meta:'Go · v0.1.0', ds:'TUI for discovering and managing localhost dev servers. Homebrew-distributed.', link:'https://github.com/jeramiahgcoffey/portview'},
+  {nm:'kboards', meta:'TypeScript · ★4', ds:'Kanban-inspired productivity and task tracking web app.', link:'https://github.com/jeramiahgcoffey/kboards'},
+  {nm:'obsidian-vault', meta:'Markdown', ds:'My second brain: PARA organization wired into Claude Code.', link:'https://github.com/jeramiahgcoffey/obsidian-vault'},
+  {nm:'dotfiles', meta:'Shell', ds:'My terminal toolkit and dev environment, version controlled.', link:'https://github.com/jeramiahgcoffey/dotfiles'}
+];
+
+const tools = [
+  {cat:'languages', items:[['TypeScript',1],['JavaScript',1],['Go',1],['Python',0],['Java',0],['SQL',0]]},
+  {cat:'frontend', items:[['React',1],['React Native',1],['Redux',0],['React Query',0],['React Hook Form',0],['Tailwind',0]]},
+  {cat:'backend', items:[['Node',1],['Express',1],['MongoDB',1],['Spring Boot',0],['REST',0],['SQL Server',0]]},
+  {cat:'infra & ops', items:[['AWS',1],['Terraform',1],['GitHub Actions',0],['CI/CD',0],['Prometheus',0]]},
+  {cat:'practice', items:[['HIPAA / security',1],['agentic AI workflows',1],['testing',0],['design',0]]}
+];
+
+const writing = [
+  {tag:'[ai-age]', ttl:'The engineer who directs the machine', ab:'Velocity now comes from directing agentic tools well, not from typing faster. What stays human is architecture, judgment, and knowing what good looks like.'},
+  {tag:'[aba]', ttl:'What HIPAA actually means in code', ab:'Audit logging, MFA you can enforce per organization, PIN access for shared devices. The compliance checklist becomes concrete engineering decisions.'},
+  {tag:'[learning]', ttl:'Shipping a TUI to learn Go', ab:'I learned Go by building portview and distributing it through Homebrew. Learning in public, one release at a time.'},
+  {tag:'[outcomes]', ttl:'From code quality to business impact', ab:'The shift from measuring yourself by clean code to measuring by what the business can now do.'}
+];
+
+/* render work */
+const rowsEl=document.getElementById('rows');
+procs.forEach((p,i)=>{
+  const r=document.createElement('div'); r.className='prow'; r.dataset.i=i;
+  r.dataset.search=(p.name+' '+p.role+' '+p.stack+' '+p.status).toLowerCase();
+  r.innerHTML=`<span class="port">${p.port}</span>
+    <span class="name">${p.name}<span class="role">${p.role}</span></span>
+    <span class="status ${p.cls}"><span class="d"></span>${p.status}</span>
+    <span class="el">${p.el}</span>
+    <div class="detail" id="d${i}"><div class="detail-in">
+      <div class="when">${p.when}</div>
+      <div class="stk">${p.stack}</div>
+      <ul>${p.detail.map(d=>`<li>${d}</li>`).join('')}</ul>
+      ${p.link?`<a class="repo" href="${p.link}" target="_blank" rel="noopener">view repo ↗</a>`:''}
+    </div></div>`;
+  rowsEl.appendChild(r);
+});
+document.getElementById('count').textContent=procs.length+' processes';
+
+/* render repos */
+const reposEl=document.getElementById('repos');
+repos.forEach(r=>{
+  const a=document.createElement('a'); a.className='repo-row'; a.href=r.link; a.target='_blank'; a.rel='noopener';
+  a.innerHTML=`<span class="nm">${r.nm}</span><span class="meta">${r.meta}</span><span class="ds">${r.ds}</span>`;
+  reposEl.appendChild(a);
+});
+
+/* render toolchain */
+const toolsEl=document.getElementById('tools');
+tools.forEach(t=>{
+  const d=document.createElement('div'); d.className='tool';
+  d.innerHTML=`<div class="cat">${t.cat}/</div><div class="chips">${t.items.map(([n,hot])=>`<span class="chip${hot?' hot':''}">${n}</span>`).join('')}</div>`;
+  toolsEl.appendChild(d);
+});
+
+/* render writing */
+const logEl=document.getElementById('log');
+writing.forEach(w=>{
+  const a=document.createElement('a'); a.className='wln'; a.href='#';
+  a.innerHTML=`<div class="top"><span class="tag">${w.tag}</span><span class="draft">draft</span></div><div class="ttl">${w.ttl}</div><div class="ab">${w.ab}</div>`;
+  logEl.appendChild(a);
+});
+
+/* interaction */
+let sel=-1;
+const rows=[...document.querySelectorAll('.prow')];
+const vis=()=>rows.filter(r=>r.style.display!=='none');
+function select(i){rows.forEach(r=>r.classList.remove('sel'));if(rows[i]){rows[i].classList.add('sel');rows[i].scrollIntoView({block:'nearest'});}sel=i;}
+function toggle(i){const d=document.getElementById('d'+i);const o=d.classList.contains('open');document.querySelectorAll('.detail.open').forEach(x=>x.classList.remove('open'));if(!o)d.classList.add('open');}
+rows.forEach(r=>{const i=+r.dataset.i;r.addEventListener('mouseenter',()=>select(i));r.addEventListener('click',e=>{if(e.target.closest('a.repo'))return;select(i);toggle(i);});});
+const fbox=document.getElementById('filter'),finp=document.getElementById('filterInput');
+const apply=q=>{q=q.toLowerCase().trim();rows.forEach(r=>r.style.display=r.dataset.search.includes(q)?'':'none');};
+finp.addEventListener('input',e=>apply(e.target.value));
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==finp){e.preventDefault();fbox.classList.add('on');finp.focus();return;}
+  if(e.key==='Escape'){fbox.classList.remove('on');finp.value='';apply('');document.querySelectorAll('.detail.open').forEach(x=>x.classList.remove('open'));finp.blur();return;}
+  if(document.activeElement===finp)return;
+  const v=vis();if(!v.length)return;
+  if(e.key==='ArrowDown'||e.key==='j'){e.preventDefault();const c=v.indexOf(rows[sel]);select(+v[Math.min(c+1,v.length-1)<0?0:Math.min(c+1,v.length-1)].dataset.i);}
+  if(e.key==='ArrowUp'||e.key==='k'){e.preventDefault();const c=v.indexOf(rows[sel]);select(+v[Math.max(c-1,0)].dataset.i);}
+  if(e.key==='Enter'&&sel>=0){e.preventDefault();toggle(sel);}
+});
+document.querySelectorAll('[data-jump]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();document.getElementById(a.dataset.jump).scrollIntoView({behavior:'smooth',block:'start'});}));
+
+/* live uptime since first dev job (Jun 2022) */
+(function(){
+  const el=document.getElementById('uptime'); if(!el)return;
+  const start=new Date(2022,5,6);
+  const pad=n=>String(n).padStart(2,'0');
+  function tick(){
+    const now=new Date();
+    let y=now.getFullYear()-start.getFullYear(), mo=now.getMonth()-start.getMonth(), d=now.getDate()-start.getDate();
+    if(d<0){mo--; d+=new Date(now.getFullYear(),now.getMonth(),0).getDate();}
+    if(mo<0){y--; mo+=12;}
+    el.textContent=`uptime ${y}y ${mo}mo ${d}d · ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  }
+  tick(); setInterval(tick,1000);
+})();
+
+/* boot, minimal */
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const boot=document.getElementById('boot'),bl=document.getElementById('bootlines');
+function start(){rows.forEach((r,i)=>{r.style.animationDelay=(i*45)+'ms';r.classList.add('stagger');});select(0);}
+if(reduce){boot.remove();start();}
+else{
+  const steps=['<span class="n">~</span> scanning localhost for processes','found <span class="ok">3</span> running, <span class="ok">3</span> exited 0','<span class="ok">ready.</span>'];
+  let t=0; steps.forEach((s,i)=>{t+=180;setTimeout(()=>{const d=document.createElement('div');d.className='l';d.innerHTML=s;bl.appendChild(d);},t);});
+  const done=()=>{boot.style.transition='opacity .3s';boot.style.opacity='0';setTimeout(()=>boot.remove(),300);start();};
+  setTimeout(done,t+420);
+  setTimeout(()=>{const skip=()=>{done();removeEventListener('keydown',skip);removeEventListener('click',skip);};addEventListener('keydown',skip);addEventListener('click',skip);},150);
+}
+</script>
+</body>
+</html>
