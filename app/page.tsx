@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import meImg from "@/public/me.jpg";
 import TopBar from "@/components/TopBar";
 import Boot from "@/components/Boot";
 import ProcessTable from "@/components/ProcessTable";
@@ -17,7 +19,8 @@ export default async function Home() {
       <div className="app">
         <TopBar />
 
-        <header className="hero">
+        <main>
+        <section className="hero" aria-label="Introduction">
           <div className="kick">$ ./jeramiah --status</div>
           <h1>
             I build software for <span className="g">ABA therapy</span>.
@@ -31,7 +34,7 @@ export default async function Home() {
           <p className="now mono">
             // currently: clinical scheduling, a Go side project, and the writing below.
           </p>
-        </header>
+        </section>
 
         <div className="grid">
           <div className="col">
@@ -64,7 +67,18 @@ export default async function Home() {
                   <span className="cmd">$</span> cat about.md
                 </span>
               </div>
-              <div className="prose">
+              <div className="about">
+                <figure className="about-media">
+                  <Image
+                    src={meImg}
+                    alt="Jeramiah Coffey in front of a black-and-white psychedelic mural"
+                    placeholder="blur"
+                    sizes="(max-width: 560px) 90vw, 230px"
+                    style={{ width: "100%", height: "auto" }}
+                  />
+                  <figcaption className="cap">me.jpg</figcaption>
+                </figure>
+                <div className="prose">
                 <p>
                   I poured drinks before I wrote software. Bartending is reading a room, working a queue under pressure,
                   and getting small details right when they matter, which turned out to be better preparation for
@@ -84,6 +98,7 @@ export default async function Home() {
                   Almost nobody talks publicly about engineering for ABA therapy. I want to be one of the people who
                   does, and to think out loud about what the job becomes when AI writes more of the code.
                 </p>
+                </div>
               </div>
             </section>
           </div>
@@ -169,29 +184,34 @@ export default async function Home() {
             </section>
           </aside>
         </div>
+        </main>
 
-        <div className="eofbar">
-          <span className="cmd">$</span> end of output
-          <span className="cur" aria-hidden="true" />
-        </div>
+        <footer>
+          <div className="eofbar">
+            <span className="cmd">$</span> end of output
+            <span className="cur" aria-hidden="true" />
+          </div>
 
-        <div className="keybar mono">
-          <span>
-            <b>nav</b> <kbd>↑</kbd>
-            <kbd>↓</kbd> <kbd>j</kbd>
-            <kbd>k</kbd>
-          </span>
-          <span>
-            <b>open</b> <kbd>enter</kbd>
-          </span>
-          <span>
-            <b>filter</b> <kbd>/</kbd>
-          </span>
-          <span>
-            <b>close</b> <kbd>esc</kbd>
-          </span>
-          <span style={{ marginLeft: "auto" }}>© 2026 jeramiah coffey. built from scratch, no template.</span>
-        </div>
+          <div className="keybar mono">
+            <div className="keys-hint" aria-hidden="true">
+              <span>
+                <b>nav</b> <kbd>↑</kbd>
+                <kbd>↓</kbd> <kbd>j</kbd>
+                <kbd>k</kbd>
+              </span>
+              <span>
+                <b>open</b> <kbd>enter</kbd>
+              </span>
+              <span>
+                <b>filter</b> <kbd>/</kbd>
+              </span>
+              <span>
+                <b>close</b> <kbd>esc</kbd>
+              </span>
+            </div>
+            <span className="copy">© 2026 jeramiah coffey. built from scratch, no template.</span>
+          </div>
+        </footer>
       </div>
     </>
   );

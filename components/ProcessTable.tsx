@@ -69,7 +69,7 @@ export default function ProcessTable() {
   }, []);
 
   return (
-    <main className="panel" id="work">
+    <section className="panel" id="work" aria-label="Work history">
       <div className="panel-h mono">
         <span>
           <span className="cmd">$</span> ps -ef --career
@@ -145,6 +145,6 @@ export default function ProcessTable() {
           </div>
         ))}
       </div>
-    </main>
+    </section>
   );
 }

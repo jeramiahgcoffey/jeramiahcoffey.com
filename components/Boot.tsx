@@ -39,7 +39,7 @@ export default function Boot() {
   if (done) return null;
 
   return (
-    <div id="boot" style={{ opacity: fade ? 0 : 1, transition: "opacity .3s" }}>
+    <div id="boot" aria-hidden="true" style={{ opacity: fade ? 0 : 1, transition: "opacity .3s" }}>
       <div className="mono">
         {lines >= 1 && (
           <div className="l">

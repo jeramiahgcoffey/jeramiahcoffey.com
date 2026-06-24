@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { site } from "@/content/site";
@@ -39,6 +39,13 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: site.url },
   robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#13110d",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -30,7 +30,7 @@ export default function UptimeTicker() {
   }, []);
 
   return (
-    <span className="pill mono hideable" suppressHydrationWarning>
+    <span className="pill mono uptime" suppressHydrationWarning>
       {label}
     </span>
   );
