@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import UptimeTicker from "./UptimeTicker";
 import { site } from "@/content/site";
 
@@ -18,6 +18,7 @@ const IDS = ["work", "source", "about"];
 
 export default function TopBar() {
   const pathname = usePathname();
+  const router = useRouter();
   const onWriting = pathname?.startsWith("/writing") ?? false;
   const [active, setActive] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -62,6 +63,26 @@ export default function TopBar() {
     });
   }, [active, onWriting]);
 
+  // on arrival at home, honor a pending section scroll (set when navigating from
+  // another page) and strip any stray #hash so the URL stays clean
+  useEffect(() => {
+    if (onWriting) return;
+    const pending = sessionStorage.getItem("scrollTo");
+    if (pending) sessionStorage.removeItem("scrollTo");
+    const hash = window.location.hash ? window.location.hash.slice(1) : "";
+    const id = pending || hash;
+    if (id) {
+      const el = document.getElementById(id);
+      if (el) {
+        requestAnimationFrame(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          setActive(id);
+        });
+      }
+    }
+    if (hash) window.history.replaceState(null, "", window.location.pathname + window.location.search);
+  }, [onWriting]);
+
   // dropdown: close on Escape, outside click, or growing past the mobile breakpoint
   useEffect(() => {
     if (!menuOpen) return;
@@ -96,6 +117,17 @@ export default function TopBar() {
     setMenuOpen(false);
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     setActive(id);
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  };
+
+  // section link clicked from another page: go home and scroll there, no #hash
+  const crossNav = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    sessionStorage.setItem("scrollTo", id);
+    router.push("/");
   };
 
   return (
@@ -138,9 +170,8 @@ export default function TopBar() {
       <nav id="topnav" aria-label="Sections" className={menuOpen ? "open" : undefined}>
         {NAV.map((item) => {
           const cls = activeNav === item.id ? "active" : undefined;
-          // routed link (writing), or a hash link when we're off the home page:
-          // use next/link so it's a client-side nav (no full reload, no boot replay)
-          if (item.route || onWriting) {
+          // the writing route is a real page: use next/link everywhere
+          if (item.route) {
             return (
               <Link
                 key={item.id}
@@ -153,14 +184,15 @@ export default function TopBar() {
               </Link>
             );
           }
-          // on home: smooth-scroll to the in-page section
+          // section links: scroll in place on home, or go-home-and-scroll from
+          // another page. either way no #hash is written to the URL.
           return (
             <a
               key={item.id}
               href={item.href}
               className={cls}
               aria-current={cls ? "true" : undefined}
-              onClick={(e) => jump(e, item.id)}
+              onClick={(e) => (onWriting ? crossNav(e, item.id) : jump(e, item.id))}
             >
               {item.label}
             </a>

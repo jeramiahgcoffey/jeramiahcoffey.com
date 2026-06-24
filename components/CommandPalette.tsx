@@ -65,8 +65,16 @@ export default function CommandPalette() {
         el.focus({ preventScroll: true });
         // focus now lives on the section; don't let close() pull it back to the trigger
         restoreFocus.current = null;
+        // keep the URL clean (no #hash)
+        if (window.location.hash) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
       } else {
-        router.push(`/#${id}`);
+        // section lives on the home page: go there and scroll, without a #hash
+        try {
+          sessionStorage.setItem("scrollTo", id);
+        } catch {}
+        router.push("/");
       }
     },
     [router],
