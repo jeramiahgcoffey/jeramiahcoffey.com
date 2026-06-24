@@ -199,12 +199,9 @@ export default async function Home() {
                 <kbd>k</kbd>
               </span>
               <span>
-                <b>sections</b> <kbd>[</kbd>
-                <kbd>]</kbd>
-              </span>
-              <span>
-                <b>rows</b> <kbd>j</kbd>
-                <kbd>k</kbd>
+                <b>sections</b> <kbd>j</kbd>
+                <kbd>k</kbd> <kbd>↑</kbd>
+                <kbd>↓</kbd>
               </span>
               <span>
                 <b>open</b> <kbd>enter</kbd>

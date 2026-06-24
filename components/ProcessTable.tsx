@@ -29,6 +29,9 @@ export default function ProcessTable() {
       // command palette owns the keyboard while it's open
       if (document.body.classList.contains("cmdk-open")) return;
       const inInput = document.activeElement === inputRef.current;
+      const ae = document.activeElement;
+      const inRows = ae instanceof Element && !!ae.closest("#rows");
+
       if (e.key === "/" && !inInput) {
         e.preventDefault();
         setFilterOn(true);
@@ -40,9 +43,15 @@ export default function ProcessTable() {
         setQ("");
         setOpen(null);
         inputRef.current?.blur();
+        // step out of the table so j/k/arrows control sections again
+        if (inRows) (ae as HTMLElement).blur();
         return;
       }
       if (inInput) return;
+
+      // row navigation only while a row in this table is focused; otherwise
+      // let global section nav (j/k/arrows) move between sections
+      if (!inRows) return;
 
       const vis = ALL.filter((p) => match(p, qRef.current));
       if (!vis.length) return;

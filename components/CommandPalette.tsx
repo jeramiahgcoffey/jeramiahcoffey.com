@@ -161,10 +161,25 @@ export default function CommandPalette() {
       }
       if (!openRef.current) {
         if (isEditable(e.target)) return;
+        // [ and ] always jump sections, even from inside the table
         if (e.key === "]") {
           e.preventDefault();
           step(1);
-        } else if (e.key === "[") {
+          return;
+        }
+        if (e.key === "[") {
+          e.preventDefault();
+          step(-1);
+          return;
+        }
+        // j/k/arrows jump sections too, unless a table row is focused (it owns them)
+        const ae = document.activeElement;
+        const inRows = ae instanceof Element && !!ae.closest("#rows");
+        if (inRows) return;
+        if (e.key === "j" || e.key === "ArrowDown") {
+          e.preventDefault();
+          step(1);
+        } else if (e.key === "k" || e.key === "ArrowUp") {
           e.preventDefault();
           step(-1);
         }
