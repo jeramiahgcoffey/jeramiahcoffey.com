@@ -20,17 +20,16 @@ export default async function Home() {
         <header className="hero">
           <div className="kick">$ ./jeramiah --status</div>
           <h1>
-            I build software for <span className="g">ABA therapy</span>, and ship tools for the people who build
-            software.
+            I build software for <span className="g">ABA therapy</span>.
             <span className="cur" aria-hidden="true" />
           </h1>
           <p className="lede">
-            Bartender turned <b>founding engineer</b>. Four years of full stack across healthtech, now owning a
-            production, HIPAA-regulated platform from the database to the native app to the cloud it runs on.
+            <b>Founding engineer</b> on a production, HIPAA-regulated platform, owned end to end: clinical data, an
+            offline-first app clinicians use in the field, and the AWS it runs on. Four years before that going from
+            frontend work to whole-system ownership.
           </p>
           <p className="now mono">
-            // now: hardening clinical scheduling, learning Go in public, writing about{" "}
-            <b>what engineering becomes when AI writes the code</b>.
+            // currently: clinical scheduling, a Go side project, and the writing below.
           </p>
         </header>
 
@@ -169,6 +168,11 @@ export default async function Home() {
               </div>
             </section>
           </aside>
+        </div>
+
+        <div className="eofbar">
+          <span className="cmd">$</span> end of output
+          <span className="cur" aria-hidden="true" />
         </div>
 
         <div className="keybar mono">

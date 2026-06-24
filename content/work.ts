@@ -63,7 +63,6 @@ export const processes: Process[] = [
     detail: [
       "A PARA-organized knowledge vault wired into Claude Code. It is the engine behind learning in public and every draft in writing.log.",
     ],
-    link: "https://github.com/jeramiahgcoffey/obsidian-vault",
   },
   {
     port: ":2024",
@@ -121,6 +120,6 @@ export const toolchain: { cat: string; items: [string, boolean][] }[] = [
 export const featuredRepos = [
   { name: "portview", fallbackDesc: "TUI for discovering and managing localhost dev servers. Homebrew-distributed.", fallbackLang: "Go" },
   { name: "kboards", fallbackDesc: "Kanban-inspired productivity and task tracking web app.", fallbackLang: "TypeScript" },
-  { name: "obsidian-vault", fallbackDesc: "My second brain: PARA organization wired into Claude Code.", fallbackLang: "Markdown" },
-  { name: "dotfiles", fallbackDesc: "My terminal toolkit and dev environment, version controlled.", fallbackLang: "Shell" },
+  { name: "nextjs-app-template", fallbackDesc: "Opinionated Next.js architecture starter: TS, linting, Storybook, Husky, commitlint.", fallbackLang: "TypeScript" },
+  { name: "whereami", fallbackDesc: "Country statistics explorer built with React and the REST Countries API.", fallbackLang: "TypeScript" },
 ] as const;
