@@ -204,7 +204,7 @@ export default async function Home() {
                 <kbd>k</kbd>
               </span>
             </div>
-            <span className="copy">© 2026 jeramiah coffey. built from scratch, no template.</span>
+            <span className="copy">© {new Date().getFullYear()} jeramiah coffey. built from scratch, no template.</span>
           </div>
         </footer>
       </div>
