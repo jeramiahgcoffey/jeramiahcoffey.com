@@ -5,9 +5,14 @@ export interface Process {
   name: string;
   role: string;
   status: Status;
-  /** ps-style elapsed time */
-  elapsed: string;
-  when: string;
+  /** Machine-readable month "YYYY-MM". When set, elapsed + date range are derived
+   *  (see elapsedFor / whenFor) so tenure never goes stale. */
+  start?: string;
+  /** Machine-readable month "YYYY-MM". Omit for a currently RUNNING role. */
+  end?: string;
+  /** Literal fallbacks for non-duration rows (a release, an always-on daemon). */
+  elapsed?: string;
+  when?: string;
   stack: string;
   detail: string[];
   link?: string;
@@ -19,14 +24,43 @@ export const statusClass: Record<Status, string> = {
   "EXIT 0": "s-exit",
 };
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function parseYearMonth(ym: string): Date {
+  const [y, m] = ym.split("-").map(Number);
+  return new Date(y, m - 1, 1);
+}
+
+function wholeMonthsBetween(from: Date, to: Date): number {
+  const months = (to.getFullYear() - from.getFullYear()) * 12 + (to.getMonth() - from.getMonth());
+  return Math.max(0, months);
+}
+
+/** ps-style elapsed time. Derived from `start` (to `end`, or to `now` for a
+ *  RUNNING role) when present, so tenure self-updates; else the literal `elapsed`. */
+export function elapsedFor(p: Process, now: Date): string {
+  if (!p.start) return p.elapsed ?? "";
+  const end = p.end ? parseYearMonth(p.end) : now;
+  return `${wholeMonthsBetween(parseYearMonth(p.start), end)}mo`;
+}
+
+/** Date-range label, e.g. "Jul 2025 to present". Derived from `start`/`end` when
+ *  present; else the literal `when`. */
+export function whenFor(p: Process): string {
+  if (!p.start) return p.when ?? "";
+  const fmt = (d: Date) => `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  const start = fmt(parseYearMonth(p.start));
+  const end = p.end ? fmt(parseYearMonth(p.end)) : "present";
+  return `${start} to ${end}`;
+}
+
 export const processes: Process[] = [
   {
     port: ":2025",
     name: "acquire-learning",
     role: "founding engineer, healthtech",
     status: "RUNNING",
-    elapsed: "12mo",
-    when: "Jul 2025 to present",
+    start: "2025-07",
     stack: "React · React Native · Express · MongoDB · Terraform · AWS",
     detail: [
       "Founding engineer on a production, HIPAA-regulated ABA therapy platform, owning features end to end across backend services, web and native clients, and cloud infrastructure.",
@@ -69,8 +103,8 @@ export const processes: Process[] = [
     name: "kvc-health / genogram",
     role: "software engineer",
     status: "EXIT 0",
-    elapsed: "9mo",
-    when: "Oct 2024 to Jul 2025",
+    start: "2024-10",
+    end: "2025-07",
     stack: "React · Go.js · TypeScript · Express · MongoDB",
     detail: [
       "Built an interactive Genogram product so caseworkers analyze client relationships, document family dynamics, and identify placement options.",
@@ -83,8 +117,8 @@ export const processes: Process[] = [
     name: "cigna / staffing-tool",
     role: "software engineer",
     status: "EXIT 0",
-    elapsed: "18mo",
-    when: "Apr 2023 to Oct 2024",
+    start: "2023-04",
+    end: "2024-10",
     stack: "React · Redux · Java · Spring Boot · SQL Server · AWS",
     detail: [
       "Led the design, development, and deployment of an enterprise staffing and financial-planning tool.",
@@ -97,8 +131,8 @@ export const processes: Process[] = [
     name: "savings-group / los",
     role: "software engineer",
     status: "EXIT 0",
-    elapsed: "7mo",
-    when: "Jun 2022 to Jan 2023",
+    start: "2022-06",
+    end: "2023-01",
     stack: "Vue · Vuetify · PHP",
     detail: [
       "Built modular single-page Loan Origination System and Customer Portal components.",

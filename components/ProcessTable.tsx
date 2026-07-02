@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { processes as ALL, statusClass, type Process } from "@/content/work";
+import { processes as ALL, statusClass, elapsedFor, whenFor, type Process } from "@/content/work";
 
 function match(p: Process, query: string) {
   const q = query.toLowerCase().trim();
@@ -17,6 +17,8 @@ export default function ProcessTable() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Derived once per render so RUNNING tenure reflects the current month.
+  const now = new Date();
   const visible = ALL.filter((p) => match(p, q));
 
   const toggleFilter = () => {
@@ -102,12 +104,12 @@ export default function ProcessTable() {
                 <span className="d" />
                 {p.status}
               </span>
-              <span className="el">{p.elapsed}</span>
+              <span className="el" suppressHydrationWarning>{elapsedFor(p, now)}</span>
             </button>
 
             <div className={`detail${open === p.name ? " open" : ""}`}>
               <div className="detail-in">
-                <div className="when">{p.when}</div>
+                <div className="when" suppressHydrationWarning>{whenFor(p)}</div>
                 <div className="stk">{p.stack}</div>
                 <ul>
                   {p.detail.map((d, j) => (
