@@ -25,7 +25,7 @@ export const processes: Process[] = [
     name: "acquire-learning",
     role: "founding engineer, healthtech",
     status: "RUNNING",
-    elapsed: "11mo",
+    elapsed: "12mo",
     when: "Jul 2025 to present",
     stack: "React · React Native · Express · MongoDB · Terraform · AWS",
     detail: [
@@ -120,6 +120,5 @@ export const toolchain: { cat: string; items: [string, boolean][] }[] = [
 export const featuredRepos = [
   { name: "portview", fallbackDesc: "TUI for discovering and managing localhost dev servers. Homebrew-distributed.", fallbackLang: "Go" },
   { name: "kboards", fallbackDesc: "Kanban-inspired productivity and task tracking web app.", fallbackLang: "TypeScript" },
-  { name: "nextjs-app-template", fallbackDesc: "Opinionated Next.js architecture starter: TS, linting, Storybook, Husky, commitlint.", fallbackLang: "TypeScript" },
-  { name: "whereami", fallbackDesc: "Country statistics explorer built with React and the REST Countries API.", fallbackLang: "TypeScript" },
+  { name: "switchback", fallbackDesc: "Overland trip planner: curated off-road trails, rig-readiness checks, and day-by-day route planning.", fallbackLang: "TypeScript" },
 ] as const;
