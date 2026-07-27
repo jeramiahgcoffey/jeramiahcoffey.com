@@ -10,16 +10,23 @@ process monitor it is named after (`portview`).
 - **Next.js 16** (App Router) + **React 19** + **TypeScript**
 - **Tailwind v4** for tokens, hand-authored CSS for the system UI
 - **next/font**: JetBrains Mono + Hanken Grotesk
-- Markdown writing with `gray-matter` + `react-markdown`
+- Markdown writing with `js-yaml` + `react-markdown`
 - Live GitHub repo data, revalidated hourly
+- Playwright browser smoke tests + GitHub Actions CI
 
 ## Develop
 
 ```bash
 npm run dev     # http://localhost:3000
 npm run build   # production build + type check
+npm run lint    # Next.js, React, TypeScript, and accessibility linting
+npm test        # Playwright smoke tests against the production build
+npm run check   # lint + build + browser tests
 npm start       # serve the production build
 ```
+
+Playwright expects a production build. Run `npm run build` before `npm test`;
+the test configuration starts the production server automatically.
 
 ## Where the content lives
 
@@ -31,6 +38,12 @@ npm start       # serve the production build
 
 To add a post: drop a `.md` file in `content/writing/`. It appears in
 `tail -f writing.log` on the home page and at `/writing`.
+
+SEO discovery files are generated from the same content:
+
+- `app/sitemap.ts` includes the home page, writing index, and published posts.
+- `app/robots.ts` points crawlers to the sitemap.
+- `app/opengraph-image.tsx` and `app/twitter-image.tsx` generate social cards.
 
 ## Design rules
 

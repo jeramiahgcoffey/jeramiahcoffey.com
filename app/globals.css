@@ -399,5 +399,6 @@ body::before { animation: ambient-drift 26s ease-in-out infinite alternate; will
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  #boot { display: none; }
   *, ::before, ::after { animation: none !important; transition: none !important; }
 }

@@ -16,8 +16,8 @@ export default function Boot() {
     if (hasBooted) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       hasBooted = true;
-      setDone(true);
-      return;
+      const doneT = window.setTimeout(() => setDone(true), 0);
+      return () => clearTimeout(doneT);
     }
     hasBooted = true;
     const timers: number[] = [];

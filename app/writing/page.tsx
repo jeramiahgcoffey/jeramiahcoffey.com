@@ -1,12 +1,37 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import TopBar from "@/components/TopBar";
+import { site } from "@/content/site";
 import { getPosts, formatDate } from "@/lib/writing";
+import { SOCIAL_IMAGE_ALT } from "@/lib/social-image";
+
+const description =
+  "Notes on engineering in the AI age, building for ABA therapy, learning in public, and trading code quality for outcomes.";
 
 export const metadata: Metadata = {
   title: "Writing",
-  description:
-    "Notes on engineering in the AI age, building for ABA therapy, learning in public, and trading code quality for outcomes.",
+  description,
+  alternates: { canonical: `${site.url}/writing` },
+  openGraph: {
+    title: `Writing · ${site.name}`,
+    description,
+    url: `${site.url}/writing`,
+    type: "website",
+    images: [
+      {
+        url: `${site.url}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: SOCIAL_IMAGE_ALT,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Writing · ${site.name}`,
+    description,
+    images: [{ url: `${site.url}/twitter-image`, alt: SOCIAL_IMAGE_ALT }],
+  },
 };
 
 export default function WritingIndex() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { site } from "@/content/site";
 
@@ -39,12 +39,6 @@ export default function CommandPalette() {
   const listRef = useRef<HTMLDivElement>(null);
   const restoreFocus = useRef<HTMLElement | null>(null);
   const cursorRef = useRef<string | null>(null); // last section the cursor landed on
-
-  // refs mirror state so the stable global key listener reads current values
-  const openRef = useRef(open);
-  openRef.current = open;
-  const activeRef = useRef(active);
-  activeRef.current = active;
 
   const close = useCallback(() => {
     setOpen(false);
@@ -155,8 +149,6 @@ export default function CommandPalette() {
     if (!q) return commands;
     return commands.filter((c) => `${c.label} ${c.hint}`.toLowerCase().includes(q));
   }, [commands, query]);
-  const filteredRef = useRef(filtered);
-  filteredRef.current = filtered;
 
   const runCommand = useCallback(
     (cmd: Command) => {
@@ -169,19 +161,15 @@ export default function CommandPalette() {
     },
     [close],
   );
-  const runRef = useRef(runCommand);
-  runRef.current = runCommand;
 
-  // single global key listener; reads latest via refs
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
+  const onGlobalKey = useEffectEvent((e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey;
       if (mod && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setOpen((o) => !o);
         return;
       }
-      if (!openRef.current) {
+      if (!open) {
         // j/k jump sections; arrows are left to the browser for normal scrolling
         if (isEditable(e.target)) return;
         if (e.key === "j") {
@@ -194,7 +182,7 @@ export default function CommandPalette() {
         return;
       }
       // palette open
-      const n = filteredRef.current.length;
+      const n = filtered.length;
       if (e.key === "Escape") {
         e.preventDefault();
         close();
@@ -212,15 +200,20 @@ export default function CommandPalette() {
         setActive(Math.max(n - 1, 0));
       } else if (e.key === "Enter") {
         e.preventDefault();
-        const cmd = filteredRef.current[activeRef.current];
-        if (cmd) runRef.current(cmd);
+        const cmd = filtered[active];
+        if (cmd) runCommand(cmd);
       } else if (e.key === "Tab") {
         e.preventDefault(); // trap focus in the dialog
       }
-    };
+  });
+
+  // single global key listener; the Effect Event reads the latest render state
+  // without re-subscribing the document listener on every keystroke.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => onGlobalKey(e);
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [step, close]);
+  }, []);
 
   // trigger from the top-bar button
   useEffect(() => {

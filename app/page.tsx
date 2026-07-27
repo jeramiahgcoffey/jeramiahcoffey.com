@@ -32,7 +32,7 @@ export default async function Home() {
             frontend work to whole-system ownership.
           </p>
           <p className="now mono">
-            // currently: clinical scheduling, a Go side project, and the writing below.
+            {"// currently: clinical scheduling, a Go side project, and the writing below."}
           </p>
         </section>
 
