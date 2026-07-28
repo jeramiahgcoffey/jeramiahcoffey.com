@@ -53,6 +53,10 @@ test("published writing and discovery routes are available", async ({ page, requ
   const socialImage = await request.get("/opengraph-image");
   expect(socialImage.ok()).toBeTruthy();
   expect(socialImage.headers()["content-type"]).toContain("image/png");
+
+  const twitterImage = await request.get("/twitter-image");
+  expect(twitterImage.ok()).toBeTruthy();
+  expect(twitterImage.headers()["content-type"]).toContain("image/png");
 });
 
 test("www requests redirect to the canonical host", async ({ request }) => {
