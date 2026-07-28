@@ -47,6 +47,11 @@ HTTPS once DNS resolves.
 
 ## 4. After it is live
 
-- Confirm `https://jeramiahcoffey.com` and `https://www.jeramiahcoffey.com` both load.
+- Confirm `https://jeramiahcoffey.com` loads.
+- Confirm `https://www.jeramiahcoffey.com` permanently redirects to the apex domain.
 - Set the canonical (already configured to `https://jeramiahcoffey.com` in `app/layout.tsx`).
-- Optional: add an OG image at `app/opengraph-image.png` (1200x630) for richer link previews.
+- Confirm `/robots.txt`, `/sitemap.xml`, `/opengraph-image`, and `/twitter-image` return successfully.
+- Add the domain property in Google Search Console, submit
+  `https://jeramiahcoffey.com/sitemap.xml`, and confirm the home page is indexable.
+- Test a shared link in an Open Graph preview tool to confirm the generated
+  1200x630 social card renders correctly.

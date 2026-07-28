@@ -1,15 +1,29 @@
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
+import { JSON_SCHEMA, load } from "js-yaml";
 
 const DIR = path.join(process.cwd(), "content", "writing");
+const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
 
-// YAML auto-parses `date: 2026-06-20` into a Date at UTC midnight. Stringifying it
-// gives a locale string (wrong day in negative-offset TZs, and sorts by weekday
-// name). Normalize back to a stable ISO YYYY-MM-DD string.
 function toISODate(v: unknown): string {
   if (v instanceof Date) return v.toISOString().slice(0, 10);
   return String(v ?? "");
+}
+
+function parsePost(file: string) {
+  const raw = fs.readFileSync(path.join(DIR, file), "utf8");
+  const match = FRONTMATTER.exec(raw);
+  if (!match) throw new Error(`Missing or invalid frontmatter in ${file}`);
+
+  const parsed = load(match[1], { schema: JSON_SCHEMA });
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error(`Frontmatter must be a mapping in ${file}`);
+  }
+
+  return {
+    data: parsed as Record<string, unknown>,
+    content: match[2],
+  };
 }
 
 export interface PostMeta {
@@ -32,7 +46,7 @@ function readAll(): Post[] {
     .filter((f) => f.endsWith(".md"))
     .map((file) => {
       const slug = file.replace(/\.md$/, "");
-      const { data, content } = matter(fs.readFileSync(path.join(DIR, file), "utf8"));
+      const { data, content } = parsePost(file);
       return {
         slug,
         title: String(data.title ?? slug),
