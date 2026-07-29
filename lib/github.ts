@@ -63,12 +63,31 @@ async function fetchGithub<T>(path: string): Promise<GithubResult<T>> {
         revalidate: GITHUB_REVALIDATE_SECONDS,
         tags: ["github-portfolio"],
       },
+      // Next 16.2.12 excludes `signal` from the cache key and deliberately
+      // removes it from background revalidation requests. This bounds a cache
+      // miss/build without poisoning later stale-while-revalidate refreshes.
       signal: AbortSignal.timeout(5000),
     });
     if (!response.ok) return { data: null, ok: false };
     return { data: (await response.json()) as T, ok: true };
   } catch {
     return { data: null, ok: false };
+  }
+}
+
+async function fetchAllPublicRepos(): Promise<GithubResult<GhRepo[]>> {
+  const repos: GhRepo[] = [];
+
+  for (let page = 1; ; page += 1) {
+    const result = await fetchGithub<GhRepo[]>(
+      `/users/${site.handle}/repos?type=owner&per_page=100&sort=full_name&direction=asc&page=${page}`,
+    );
+    if (!result.ok || !Array.isArray(result.data)) {
+      return { data: repos.length > 0 ? repos : null, ok: false };
+    }
+
+    repos.push(...result.data);
+    if (result.data.length < 100) return { data: repos, ok: true };
   }
 }
 
@@ -79,9 +98,7 @@ async function fetchGithub<T>(path: string): Promise<GithubResult<T>> {
  */
 export async function getGithubPortfolioData(): Promise<GithubPortfolioData> {
   const [reposResult, releaseResult] = await Promise.all([
-    fetchGithub<GhRepo[]>(
-      `/users/${site.handle}/repos?per_page=100&sort=updated`,
-    ),
+    fetchAllPublicRepos(),
     fetchGithub<GhRelease>(
       `/repos/${site.handle}/portview/releases/latest`,
     ),
