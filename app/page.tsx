@@ -10,6 +10,7 @@ import { getPublishedPosts, formatDate } from "@/lib/writing";
 import { toolchain } from "@/content/work";
 import { site } from "@/content/site";
 
+// Keep in sync with GITHUB_REVALIDATE_SECONDS in lib/github.ts.
 export const revalidate = 3600;
 
 export default async function Home() {

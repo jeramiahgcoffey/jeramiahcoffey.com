@@ -2,6 +2,7 @@ import "server-only";
 import { site } from "@/content/site";
 import { featuredRepos } from "@/content/work";
 
+// Keep in sync with the statically analyzable route value in app/page.tsx.
 const GITHUB_REVALIDATE_SECONDS = 3600;
 
 export interface RepoCard {
@@ -108,7 +109,8 @@ export async function getGithubPortfolioData(): Promise<GithubPortfolioData> {
   const byName = Object.fromEntries((repos ?? []).map((repo) => [repo.name, repo]));
   const ownedRepos = repos?.filter((repo) => !repo.fork) ?? null;
 
-  const successfulSources = Number(reposResult.ok) + Number(releaseResult.ok);
+  const reposOk = reposResult.ok && repos !== null;
+  const successfulSources = Number(reposOk) + Number(releaseResult.ok);
   const source =
     successfulSources === 2 ? "live" : successfulSources === 1 ? "partial" : "fallback";
 

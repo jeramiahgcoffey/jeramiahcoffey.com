@@ -51,8 +51,9 @@ SEO discovery files are generated from the same content:
 The home page is incrementally regenerated every hour. GitHub requests run in
 parallel and can use an optional server-only `GITHUB_TOKEN` for higher API rate
 limits. Without a token, the public API is used; if GitHub is unavailable,
-local career and writing stats still render and remote values show an honest
-unavailable state rather than stale hard-coded numbers.
+local career and writing stats still render, aggregate remote telemetry shows an
+honest unavailable state, and featured repository cards use their configured
+fallback copy where available.
 
 ## Design rules
 

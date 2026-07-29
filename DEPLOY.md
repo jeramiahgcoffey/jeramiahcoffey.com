@@ -19,8 +19,9 @@ gh repo create jeramiahcoffey.com --private --source . --remote origin --push
 3. Deploy. You get a `*.vercel.app` URL to verify against.
 
 No build config is required. GitHub telemetry is cached and revalidated hourly.
-It falls back to curated repo descriptions and marks unavailable remote stats,
-so rate limits or network failures never fail the build or fabricate a zero.
+It falls back to curated repo descriptions and marks unavailable aggregate
+remote statistics as unavailable, so rate limits or network failures never fail
+the build or turn a missing aggregate into a fabricated zero.
 
 ## 3. Point the domain (GoDaddy)
 
