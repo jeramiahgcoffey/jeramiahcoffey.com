@@ -72,7 +72,7 @@ export const processes: Process[] = [
     ],
   },
   {
-    port: ":v0.1.0",
+    port: ":v0.3.0",
     name: "portview",
     role: "daemon, open source",
     status: "PUBLISHED",
@@ -81,7 +81,7 @@ export const processes: Process[] = [
     stack: "Go · Bubble Tea · Lip Gloss",
     detail: [
       "A single-binary TUI that discovers TCP servers listening on localhost, shows the owning process, and lets you open, kill, label, and filter them.",
-      "My first Go project, shipped through a Homebrew tap and GitHub Releases with four platform binaries and checksums.",
+      "My first Go project, shipped through a Homebrew tap and GitHub Releases with signed platform binaries and checksums.",
       "This site borrows its concept. Install it: brew install jeramiahgcoffey/tap/portview",
     ],
     link: "https://github.com/jeramiahgcoffey/portview",
@@ -150,7 +150,7 @@ export const toolchain: { cat: string; items: [string, boolean][] }[] = [
   { cat: "practice/", items: [["HIPAA / security", true], ["agentic AI workflows", true], ["testing", false], ["design", false]] },
 ];
 
-/** curated open-source repos; live stars/desc merged in at build via lib/github */
+/** Curated open-source repos; live stars and descriptions are merged by lib/github. */
 export const featuredRepos = [
   { name: "portview", fallbackDesc: "TUI for discovering and managing localhost dev servers. Homebrew-distributed.", fallbackLang: "Go" },
   { name: "kboards", fallbackDesc: "Kanban-inspired productivity and task tracking web app.", fallbackLang: "TypeScript" },

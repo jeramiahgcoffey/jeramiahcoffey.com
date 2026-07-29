@@ -67,8 +67,17 @@ export function getPosts(): PostMeta[] {
   });
 }
 
+export function getPublishedPosts(): PostMeta[] {
+  return getPosts().filter((post) => !post.draft);
+}
+
 export function getPost(slug: string): Post | undefined {
   return readAll().find((p) => p.slug === slug);
+}
+
+export function getPublishedPost(slug: string): Post | undefined {
+  const post = getPost(slug);
+  return post?.draft ? undefined : post;
 }
 
 export function formatDate(iso: string): string {

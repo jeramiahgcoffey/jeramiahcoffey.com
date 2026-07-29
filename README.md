@@ -11,7 +11,8 @@ process monitor it is named after (`portview`).
 - **Tailwind v4** for tokens, hand-authored CSS for the system UI
 - **next/font**: JetBrains Mono + Hanken Grotesk
 - Markdown writing with `js-yaml` + `react-markdown`
-- Live GitHub repo data, revalidated hourly
+- Live GitHub telemetry (repos, stars, and releases), revalidated hourly with
+  failure-safe local fallbacks
 - Playwright browser smoke tests + GitHub Actions CI
 
 ## Develop
@@ -31,9 +32,11 @@ the test configuration starts the production server automatically.
 ## Where the content lives
 
 - `content/site.ts` — name, url, socials, location, career start (drives the uptime ticker)
-- `content/work.ts` — the process table (roles), toolchain, featured repos
+- `content/work.ts` — the process table (roles), toolchain, featured repos;
+  the `portview` process version is overlaid from the latest live release
 - `content/writing/*.md` — blog posts. Frontmatter: `title, date, pillar, summary, draft`
-- `lib/github.ts` — fetches live stars/descriptions for featured repos
+- `lib/github.ts` — fetches the shared GitHub telemetry snapshot and featured repo data
+- `components/PortfolioStats.tsx` — renders career, writing, repo, star, and release stats
 - `app/page.tsx` — the dashboard; `about.md` prose is inline here
 
 To add a post: drop a `.md` file in `content/writing/`. It appears in
@@ -44,6 +47,13 @@ SEO discovery files are generated from the same content:
 - `app/sitemap.ts` includes the home page, writing index, and published posts.
 - `app/robots.ts` points crawlers to the sitemap.
 - `app/opengraph-image.tsx` and `app/twitter-image.tsx` generate social cards.
+
+The home page is incrementally regenerated every hour. GitHub requests run in
+parallel and can use an optional server-only `GITHUB_TOKEN` for higher API rate
+limits. Without a token, the public API is used; if GitHub is unavailable,
+local career and writing stats still render, aggregate remote telemetry shows an
+honest unavailable state, and featured repository cards use their configured
+fallback copy where available.
 
 ## Design rules
 

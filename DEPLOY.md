@@ -13,12 +13,15 @@ gh repo create jeramiahcoffey.com --private --source . --remote origin --push
 ## 2. Import into Vercel
 
 1. Go to https://vercel.com/new and import the repo.
-2. Framework preset: **Next.js** (auto-detected). No env vars needed.
+2. Framework preset: **Next.js** (auto-detected). No env vars are required.
+   Optionally set a server-only `GITHUB_TOKEN` with read access to public
+   metadata for higher API rate limits.
 3. Deploy. You get a `*.vercel.app` URL to verify against.
 
-No build config required. The GitHub repo fetch in `lib/github.ts` runs
-unauthenticated and falls back to static descriptions, so the build never
-fails on rate limits.
+No build config is required. GitHub telemetry is cached and revalidated hourly.
+It falls back to curated repo descriptions and marks unavailable aggregate
+remote statistics as unavailable, so rate limits or network failures never fail
+the build or turn a missing aggregate into a fabricated zero.
 
 ## 3. Point the domain (GoDaddy)
 

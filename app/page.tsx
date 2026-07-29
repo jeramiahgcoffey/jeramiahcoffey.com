@@ -4,14 +4,20 @@ import meImg from "@/public/me.jpg";
 import TopBar from "@/components/TopBar";
 import Boot from "@/components/Boot";
 import ProcessTable from "@/components/ProcessTable";
-import { getFeaturedRepos } from "@/lib/github";
-import { getPosts, formatDate } from "@/lib/writing";
+import PortfolioStats from "@/components/PortfolioStats";
+import { getGithubPortfolioData } from "@/lib/github";
+import { getPublishedPosts, formatDate } from "@/lib/writing";
 import { toolchain } from "@/content/work";
 import { site } from "@/content/site";
 
+// Keep in sync with GITHUB_REVALIDATE_SECONDS in lib/github.ts.
+export const revalidate = 3600;
+
 export default async function Home() {
-  const repos = await getFeaturedRepos();
-  const posts = getPosts().slice(0, 4);
+  const github = await getGithubPortfolioData();
+  const publishedPosts = getPublishedPosts();
+  const posts = publishedPosts.slice(0, 4);
+  const snapshotAt = new Date();
 
   return (
     <>
@@ -36,9 +42,16 @@ export default async function Home() {
           </p>
         </section>
 
+        <PortfolioStats
+          careerStart={site.careerStart}
+          publishedPosts={publishedPosts.length}
+          github={github}
+          snapshotAt={snapshotAt}
+        />
+
         <div className="grid">
           <div className="col">
-            <ProcessTable />
+            <ProcessTable latestPortviewTag={github.latestRelease?.tag} />
 
             <section className="panel" id="source">
               <div className="panel-h mono">
@@ -48,7 +61,7 @@ export default async function Home() {
                 <span className="r">public on github</span>
               </div>
               <div className="repos">
-                {repos.map((r) => (
+                {github.featured.map((r) => (
                   <a className="repo-row" key={r.name} href={r.url} target="_blank" rel="noopener noreferrer">
                     <span className="nm">{r.name}</span>
                     <span className="meta">
@@ -133,7 +146,7 @@ export default async function Home() {
                   <span className="cmd">$</span> tail -f writing.log
                 </span>
                 <span className="r">
-                  {posts.length} {posts.length === 1 ? "post" : "posts"}
+                  {publishedPosts.length} published · showing {posts.length}
                 </span>
               </div>
               <div className="log">

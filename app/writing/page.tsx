@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import TopBar from "@/components/TopBar";
 import { site } from "@/content/site";
-import { getPosts, formatDate } from "@/lib/writing";
+import { getPublishedPosts, formatDate } from "@/lib/writing";
 import { SOCIAL_IMAGE_ALT } from "@/lib/social-image";
 
 const description =
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 };
 
 export default function WritingIndex() {
-  const posts = getPosts();
+  const posts = getPublishedPosts();
 
   return (
     <div className="app">
