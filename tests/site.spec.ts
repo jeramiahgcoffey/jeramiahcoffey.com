@@ -7,6 +7,11 @@ test("home navigation and command palette work", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /I build software for ABA therapy/ }),
   ).toBeVisible();
+  const stats = page.getByRole("region", { name: "Live portfolio stats" });
+  await expect(stats).toBeVisible();
+  await expect(stats.getByText("published writing")).toBeVisible();
+  await expect(stats.locator("dd").nth(1)).toHaveText("05");
+  await expect(stats.getByText("1h refresh")).toBeVisible();
   await expect(page.getByRole("region", { name: "Work history" })).toBeVisible();
 
   await page.getByRole("button", { name: "Open command menu" }).click();

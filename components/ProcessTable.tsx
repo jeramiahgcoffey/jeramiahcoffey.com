@@ -9,7 +9,11 @@ function match(p: Process, query: string) {
   return `${p.name} ${p.role} ${p.stack} ${p.status}`.toLowerCase().includes(q);
 }
 
-export default function ProcessTable() {
+export default function ProcessTable({
+  latestPortviewTag,
+}: {
+  latestPortviewTag?: string;
+}) {
   const [q, setQ] = useState("");
   const [filterOn, setFilterOn] = useState(false);
   const [sel, setSel] = useState(ALL[0]?.name ?? "");
@@ -19,7 +23,12 @@ export default function ProcessTable() {
 
   // Derived once per render so RUNNING tenure reflects the current month.
   const now = new Date();
-  const visible = ALL.filter((p) => match(p, q));
+  const all = ALL.map((process) =>
+    process.name === "portview" && latestPortviewTag
+      ? { ...process, port: `:${latestPortviewTag}` }
+      : process,
+  );
+  const visible = all.filter((process) => match(process, q));
 
   const toggleFilter = () => {
     setFilterOn((on) => {
@@ -37,7 +46,7 @@ export default function ProcessTable() {
           <span className="cmd">$</span> ps -ef --career
         </span>
         <span className="ph-right">
-          <span className="r">{ALL.length} processes</span>
+          <span className="r">{all.length} processes</span>
           <button
             type="button"
             className={`ph-filter${filterOn ? " on" : ""}`}

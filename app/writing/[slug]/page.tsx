@@ -5,16 +5,16 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import TopBar from "@/components/TopBar";
 import { site } from "@/content/site";
-import { getPost, getPosts, formatDate } from "@/lib/writing";
+import { getPublishedPost, getPublishedPosts, formatDate } from "@/lib/writing";
 import { SOCIAL_IMAGE_ALT } from "@/lib/social-image";
 
 export function generateStaticParams() {
-  return getPosts().map((p) => ({ slug: p.slug }));
+  return getPublishedPosts().map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = getPublishedPost(slug);
   if (!post) return {};
   const url = `${site.url}/writing/${slug}`;
   return {
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Article({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = getPublishedPost(slug);
   if (!post) notFound();
 
   return (

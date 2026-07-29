@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/content/site";
-import { getPosts } from "@/lib/writing";
+import { getPublishedPosts } from "@/lib/writing";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getPosts().filter((post) => !post.draft);
+  const posts = getPublishedPosts();
   const latestPostDate = posts[0]?.date;
 
   return [
